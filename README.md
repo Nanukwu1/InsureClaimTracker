@@ -21,7 +21,7 @@ All data is stored in a CSV file, so information is saved and available the next
 
    ```bash
 python InsureClaim.py
-```
+
 4. Follow the on-screen menu to interact with the system
 
 ## Technologies Used
