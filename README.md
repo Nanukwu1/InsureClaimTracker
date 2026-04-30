@@ -19,8 +19,6 @@ All data is stored in a CSV file, so information is saved and available the next
 2. Open the project in a Python environment (such as VS Code)  
 3. Run the file:
 
-  3. Run the file:
-
 ```bash
 python InsureClaim.py
 ```
