@@ -10,17 +10,17 @@
 
 import os
 
-from typer import confirm
-
 FILE_NAME = os.path.join(os.path.dirname(__file__), "claims.csv")
 
 # ----------------------------------------------------------
 # Helper: Validate amount input (must be numeric)
 # ----------------------------------------------------------
 def is_valid_amount(amount):
+    # Try to convert the amount to a number
     try:
         float(amount)
         return True
+    # If conversion fails, the amount is not valid
     except ValueError:
         return False
 
@@ -28,10 +28,18 @@ def is_valid_amount(amount):
 # Helper: Check for duplicate Claim IDs
 # ----------------------------------------------------------
 def claim_id_exists(claim_id):
+    # If the CSV file does not exist yet, no duplicate claim ID can exist
+    if not os.path.exists(FILE_NAME):
+        return False
+
+    # Read each claim in the CSV file and compare the stored Claim ID
     with open(FILE_NAME, "r") as file:
         for line in file:
-            if line.startswith(claim_id + ","):
+            # Split each line and check only the first column, which stores the Claim ID
+            if line.split(",")[0] == claim_id:
                 return True
+
+    # Return False if no matching Claim ID is found
     return False
 
 # ----------------------------------------------------------
