@@ -8,6 +8,7 @@
 # ============================================
 
 import os
+from datetime import datetime
 
 FILE_NAME = os.path.join(os.path.dirname(__file__), "claims.csv")
 
@@ -42,15 +43,23 @@ def claim_id_exists(claim_id):
     return False
 
 # ----------------------------------------------------------
+# Return the current timestamp in a readable format
+# ----------------------------------------------------------
+def get_timestamp():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+# ----------------------------------------------------------
 # Initialize the CSV file if it does not exist
+# Now includes Created and Last Updated columns for date tracking
 # ----------------------------------------------------------
 def initialize_file():
     if not os.path.exists(FILE_NAME):
         with open(FILE_NAME, "w") as file:
-            file.write("Claim ID,Patient Name,Amount,Status\n")
+            file.write("Claim ID,Patient Name,Amount,Status,Created,Last Updated\n")
 
 # ----------------------------------------------------------
 # Add a new claim to the system by collecting user input
+# Automatically records the creation timestamp
 # ----------------------------------------------------------
 def add_claim():
     print("\n--- Add Claim ---")
@@ -79,12 +88,14 @@ def add_claim():
     if claim_id_exists(claim_id):
         print("Error: Claim ID already exists.")
         return
+    
+    # Capture the current timestamp as the creation date
+    timestamp = get_timestamp()
 
-    # Save the new claim to the CSV file
+    # Save the new claim to the CSV file,including created and last updated timestamps
     with open(FILE_NAME, "a") as file:
-        file.write(f"{claim_id},{name},{amount},{status}\n")
-
-    print("Claim added successfully.")
+        file.write(f"{claim_id},{name},{amount},{status},{timestamp},{timestamp}\n")
+        print(f"Claim added successfully. Created at: {timestamp}")
 
 # ----------------------------------------------------------
 # Display all stored claims from the CSV file
@@ -103,26 +114,145 @@ def view_claims():
             return
 
         # Display column headers so the output is easier to read
-        print(f"{'ID':<10}{'Name':<20}{'Amount':<10}{'Status':<10}")
-        print("-" * 50)
-
+        print(f"{'ID':<10}{'Name':<20}{'Amount':<10}{'Status':<10}{'Created':<22}{'Last Updated':<22}")
+        print("-" * 94)
+      
         # Go through each claim and display its details
         for line in lines[1:]:
             # Split the line into individual values using comma as delimiter
             data = line.strip().split(",")
 
-            # Skip any incomplete or incorrectly formatted lines to prevent errors
-            if len(data) != 4:
+            # Handle both old format (4 columns) and new format (6 columns)
+            if len(data) == 4:
+                print(f"{data[0]:<10}{data[1]:<20}{data[2]:<10}{data[3]:<10}{'N/A':<22}{'N/A':<22}")
+            elif len(data) == 6:
+                print(f"{data[0]:<10}{data[1]:<20}{data[2]:<10}{data[3]:<10}{data[4]:<22}{data[5]:<22}")
+            else:
+                # Skip any incomplete or incorrectly formatted lines to prevent errors
                 continue
-
-            # Display each claim in a formatted row
-            print(f"{data[0]:<10}{data[1]:<20}{data[2]:<10}{data[3]:<10}")
 
     except FileNotFoundError:
         print("Error: File not found.")
 
 # ----------------------------------------------------------
+# Search and filter claims by patient name or status
+# Allows partial matches so users don't need exact input
+# ----------------------------------------------------------
+def search_claims():
+    print("\n--- Search / Filter Claims ---")
+    print("1. Search by Patient Name")
+    print("2. Filter by Status")
+ 
+    try:
+        choice = input("Select search type: ").strip()
+    except KeyboardInterrupt:
+        print("\nInput interrupted. Returning to menu.")
+        return
+ 
+    if choice not in ("1", "2"):
+        print("Invalid option.")
+        return
+ 
+    try:
+        keyword = input("Enter search term: ").strip().lower()
+    except KeyboardInterrupt:
+        print("\nInput interrupted. Returning to menu.")
+        return
+ 
+    if keyword == "":
+        print("Error: Search term cannot be empty.")
+        return
+ 
+    try:
+        with open(FILE_NAME, "r") as file:
+            lines = file.readlines()
+    except FileNotFoundError:
+        print("Error: File not found.")
+        return
+ 
+    # Collect all matching results
+    results = []
+    for line in lines[1:]:
+        data = line.strip().split(",")
+        if len(data) < 4:
+            continue
+ 
+        # Match against name (column 1) or status (column 3) based on user choice
+        if choice == "1" and keyword in data[1].lower():
+            results.append(data)
+        elif choice == "2" and keyword in data[3].lower():
+            results.append(data)
+ 
+    # Display results or inform the user nothing was found
+    if not results:
+        print("No matching claims found.")
+        return
+ 
+    print(f"\n--- Search Results ({len(results)} found) ---")
+    print(f"{'ID':<10}{'Name':<20}{'Amount':<10}{'Status':<10}{'Created':<22}{'Last Updated':<22}")
+    print("-" * 94)
+    for data in results:
+        created = data[4] if len(data) > 4 else "N/A"
+        updated = data[5] if len(data) > 5 else "N/A"
+        print(f"{data[0]:<10}{data[1]:<20}{data[2]:<10}{data[3]:<10}{created:<22}{updated:<22}")
+
+# ----------------------------------------------------------
+# Display a summary report of all claims
+# Shows total count, total amount, and a breakdown by status
+# ----------------------------------------------------------
+def summary_report():
+    print("\n--- Claims Summary Report ---")
+ 
+    try:
+        with open(FILE_NAME, "r") as file:
+            lines = file.readlines()
+    except FileNotFoundError:
+        print("Error: File not found.")
+        return
+ 
+    if len(lines) <= 1:
+        print("No claims to summarize.")
+        return
+ 
+    total_count = 0
+    total_amount = 0.0
+    status_counts = {}
+    status_amounts = {}
+ 
+    for line in lines[1:]:
+        data = line.strip().split(",")
+        if len(data) < 4:
+            continue
+ 
+        total_count += 1
+ 
+        # Safely parse the amount and add to running total
+        try:
+            amount = float(data[2])
+            total_amount += amount
+        except ValueError:
+            amount = 0.0
+ 
+        # Group counts and amounts by status for the breakdown section
+        status = data[3].capitalize()
+        status_counts[status] = status_counts.get(status, 0) + 1
+        status_amounts[status] = status_amounts.get(status, 0.0) + amount
+ 
+    # Display overall totals
+    print(f"\nTotal Claims     : {total_count}")
+    print(f"Total Amount     : ${total_amount:,.2f}")
+    print(f"Average Amount   : ${(total_amount / total_count):,.2f}" if total_count > 0 else "Average Amount   : $0.00")
+ 
+    # Display a per-status breakdown
+    print("\n--- Breakdown by Status ---")
+    print(f"{'Status':<15}{'Count':<10}{'Total Amount':<15}")
+    print("-" * 40)
+    for status, count in sorted(status_counts.items()):
+        print(f"{status:<15}{count:<10}${status_amounts[status]:,.2f}")
+ 
+# ----------------------------------------------------------
 # Update an existing claim
+# Automatically updates the Last Updated timestamp on save
 # ----------------------------------------------------------
 def update_claim():
     print("\n--- Update Claim ---")
@@ -180,9 +310,13 @@ def update_claim():
                     except KeyboardInterrupt:
                         print("\nUpdate cancelled.")
                         return
+                    
+                    # Preserve original creation date; update the Last Updated timestamp
+                    created = data[4] if len(data) > 4 else get_timestamp()
+                    last_updated = get_timestamp()
 
                     # Write updated claim information to file
-                    file.write(f"{claim_id},{name},{amount},{status}\n")
+                    file.write(f"{claim_id},{name},{amount},{status},{created},{last_updated}\n")
                     updated = True
                 else:
                     # Keep all other records unchanged
@@ -190,7 +324,7 @@ def update_claim():
 
         # Inform user whether update was successful or not
         if updated:
-            print("Claim updated successfully.")
+            print("Claim updated successfully. Last updated at: {get_timestamp()}")
         else:
             print("Error: Claim ID not found.")
 
@@ -263,7 +397,9 @@ def menu():
         print("2. View Claims")
         print("3. Update Claim")
         print("4. Delete Claim")
-        print("5. Exit")
+        print("5. Search / Filter Claims")
+        print("6. Summary Report")
+        print("7. Exit")
 
         try:
             # Get user choice for desired operation
@@ -282,6 +418,10 @@ def menu():
         elif choice == "4":
             delete_claim()
         elif choice == "5":
+            search_claims()
+        elif choice == "6":
+            summary_report()
+        elif choice == "7":
             print("Exiting system.")
             break
         else:
