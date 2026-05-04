@@ -1,21 +1,29 @@
-# Insure Claim Management System
-A  centralized system for managing insurance claims
+# Insure Claim Tracker System
+A centralized system for managing insurance claims.
 
 This project is a Python-based application designed to manage insurance claims through a simple command-line interface. It allows users to add, view, update, and delete claim records while ensuring that all required information is entered correctly.
 
-This program deletes the need for manual spreadsheets, unneccesary tools, or inconsistency in record tracking. 
+This program eliminates the need for manual spreadsheets, unnecessary tools, and inconsistent record tracking.
 
 All data is stored in a CSV file, so information is saved and available the next time the program runs. The system is organized using functions, making the code easier to understand, maintain, and update.
 
-## Key Features
+## Features
 
-* Add, view, update, and delete claims (CRUD operations)
-* Validates user input to prevent missing or incorrect data
-* Stores data in a CSV file for reuse
-* Includes error handling to keep the program running smoothly
-* Organized into separate functions for clarity
+* Add a new insurance claim
+* View all stored claims in a formatted table
+* Update an existing claim
+* Delete a claim
+* Prevent duplicate claim IDs
+* Validate numeric input for claim amounts
+* Handle errors to avoid program crashes
 
-## How to Run
+## Technologies Used
+
+* Python
+* CSV file handling
+* Command-line interface (CLI)
+
+## How to Run the Program
 
 1. Download or clone the repository  
 2. Open the project in a Python environment (such as VS Code)  
@@ -27,12 +35,36 @@ python InsureClaim.py
 
 4. Follow the on-screen menu to interact with the system
 
-## Technologies Used
+## File Structure
 
-* Python
-* CSV file handling
+* InsureClaim.py → Main program file containing all logic
+* claims.csv → Stores all claim records
+* README.md → Project documentation
 
-## Contributors
+## Example Usage
+
+When the program runs, the user will see the following menu:
+
+--- Insure Claim Tracker ---
+
+1. Add Claim
+2. View Claims
+3. Update Claim
+4. Delete Claim
+5. Exit
+
+The user selects an option by entering the corresponding number.
+
+## Error Handling
+
+The program includes error handling to:
+
+* Prevent non-numeric claim amounts
+* Avoid duplicate claim IDs
+* Handle missing files
+* Prevent crashes from invalid or incomplete input
+
+## Authors
 
 * Nini Anukwu
 * Gopi Kacha
