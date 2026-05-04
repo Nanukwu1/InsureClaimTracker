@@ -18,6 +18,9 @@ All data is stored in a CSV file, so information is saved and available the next
 * Prevent duplicate claim IDs
 * Validate numeric input for claim amounts
 * Handle errors to avoid program crashes
+* Search claims by patient name or filter by status
+* View a summary report with totals and per-status breakdown
+* Automatically track creation and last updated timestamps per claim
 
 ## Technologies Used
 
@@ -49,7 +52,9 @@ When the program runs, the user will see the following menu:
 2. View Claims
 3. Update Claim
 4. Delete Claim
-5. Exit
+5. Search / Filter Claims
+6. Summary Report
+7. Exit
 
 The user selects an option by entering the corresponding number.
 
@@ -61,6 +66,7 @@ This system includes input validation and error handling to ensure:
 * Avoid duplicate claim IDs
 * Handles empty or missing files without crashing
 * Required fields are entered
+* Timestamps are automatically recorded and cannot be manually entered or skipped
 
 ## Authors
 
