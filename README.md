@@ -3,7 +3,9 @@ A centralized system for managing insurance claims.
 
 This project is a Python-based application designed to manage insurance claims through a simple command-line interface. It allows users to add, view, update, and delete claim records while ensuring that all required information is entered correctly.
 
-This program eliminates the need for manual spreadsheets, unnecessary tools, and inconsistent record tracking.
+The system is designed to be simple, efficient, and user-friendly for managing claim records.
+
+This program reduces the need for manual spreadsheets, unnecessary tools, and inconsistent record tracking.
 
 All data is stored in a CSV file, so information is saved and available the next time the program runs. The system is organized using functions, making the code easier to understand, maintain, and update.
 
