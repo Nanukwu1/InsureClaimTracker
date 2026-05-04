@@ -13,7 +13,7 @@ import os
 FILE_NAME = os.path.join(os.path.dirname(__file__), "claims.csv")
 
 # ----------------------------------------------------------
-# Helper: Validate amount input (must be numeric)
+# Ensure the claim amount is numeric to prevent invalid financial data from being stored
 # ----------------------------------------------------------
 def is_valid_amount(amount):
     # Try to convert the amount to a number
@@ -25,7 +25,7 @@ def is_valid_amount(amount):
         return False
 
 # ----------------------------------------------------------
-# Helper: Check for duplicate Claim IDs
+# Check whether the claim ID already exists to prevent duplicate entries
 # ----------------------------------------------------------
 def claim_id_exists(claim_id):
     # If the CSV file does not exist yet, no duplicate claim ID can exist
@@ -57,11 +57,11 @@ def add_claim():
     print("\n--- Add Claim ---")
 
     try:
-        # Collect user input for each required field
-        claim_id = input("Enter Claim ID: ").strip()
+        # Collect user input for each required field with clear instructions
+        claim_id = input("Enter Claim ID (must be unique): ").strip()
         name = input("Enter Patient Name: ").strip()
-        amount = input("Enter Claim Amount: ").strip()
-        status = input("Enter Claim Status: ").strip()
+        amount = input("Enter Claim Amount (numbers only): ").strip()
+        status = input("Enter Claim Status (e.g., Pending, Paid): ").strip()
     except KeyboardInterrupt:
         print("\nInput interrupted. Returning to menu.")
         return
@@ -71,17 +71,17 @@ def add_claim():
         print("Error: All fields are required.")
         return
 
-    # Ensure Claim ID is unique
+    # Validate amount is numeric
+    if not is_valid_amount(amount):
+        print("Error: Amount must be numeric.")
+        return
+
+    # Check for duplicate Claim ID
     if claim_id_exists(claim_id):
         print("Error: Claim ID already exists.")
         return
 
-    # Ensure amount is numeric
-    if not is_valid_amount(amount):
-        print("Error: Amount must be a number.")
-        return
-
-    # Save the new claim to the CSV file so it can be accessed later
+    # Save the new claim to the CSV file
     with open(FILE_NAME, "a") as file:
         file.write(f"{claim_id},{name},{amount},{status}\n")
 
@@ -156,12 +156,12 @@ def update_claim():
                     print("Updating claim...")
 
                     try:
-                        # Ask user for new updated information
+                        # Ask user for updated information for the selected claim
                         name = input(f"Enter new Patient Name [{data[1]}]: ").strip()
                         amount = input(f"Enter new Amount [{data[2]}]: ").strip()
                         status = input(f"Enter new Status [{data[3]}]: ").strip()
 
-                        # Keep old values if blank
+                        # Keep existing values if user leaves input blank
                         if name == "":
                             name = data[1]
                         if amount == "":
@@ -169,10 +169,11 @@ def update_claim():
                         if status == "":
                             status = data[3]
 
-                        # Validate updated amount
+                        # Validate amount to ensure it is numeric after update
                         if not is_valid_amount(amount):
-                            print("Error: Amount must be a number.")
+                            print("Error: Amount must be numeric.")
                             return
+
                     except KeyboardInterrupt:
                         print("\nUpdate cancelled.")
                         return
