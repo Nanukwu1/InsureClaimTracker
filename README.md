@@ -84,7 +84,7 @@ The program includes input validation and error handling to ensure:
 
 ## Note
 
-The `claims.csv` file is intentionally submitted empty to allow the program to be tested from a clean state. This allows the instructor to run the program and verify all features, including adding, updating, and deleting claims.
+The `claims.csv` file is intentionally submitted empty to allow the program to be tested from a clean state. This allows users to run the program and verify all features, including adding, updating, and deleting claims.
 
 ## Authors
 
