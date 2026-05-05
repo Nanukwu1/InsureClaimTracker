@@ -39,7 +39,7 @@ python InsureClaim.py
 
 5. Follow the on-screen menu to interact with the system  
 
-## Code Logic Overview
+## Code Logic 
 
 The program is organized into separate functions, with each one handling a specific part of the system:
 
