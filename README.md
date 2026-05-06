@@ -86,6 +86,18 @@ The program includes input validation and error handling to ensure:
 
 The `claims.csv` file is intentionally submitted empty to allow the program to be tested from a clean state. This allows users to run the program and verify all features, including adding, updating, and deleting claims.
 
+## Project Files
+
+This repository contains:
+
+* `InsureClaim.py` – Main Python application
+* `claims.csv` – Stores insurance claim records
+* `InsureClaim_BoardUpdate.pptx` – Project presentation slides
+* `README.md` – Project overview and instructions
+
+The PowerPoint presentation has been uploaded to this repository and can be downloaded directly from GitHub.
+
+
 ## Authors
 
 - Nini Anukwu  
